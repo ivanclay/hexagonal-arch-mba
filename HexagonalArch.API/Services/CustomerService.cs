@@ -24,7 +24,7 @@ public class CustomerService
         return customer;
     }
 
-    public async Task<Customer?> FindByIdAsync(long id)
+    public virtual async Task<Customer?> FindByIdAsync(long id)
     {
         return await _repository.FindByIdAsync(id);
     }

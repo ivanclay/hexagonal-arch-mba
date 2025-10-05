@@ -4,7 +4,7 @@ using HexagonalArch.API.Models;
 using HexagonalArch.API.Services;
 using Moq;
 
-namespace HexagonalArch.Test.Application.UseCases;
+namespace HexagonalArch.Test.Application.UseCases.EventUseCase;
 
 public class CreateEventUseCaseTest
 {
