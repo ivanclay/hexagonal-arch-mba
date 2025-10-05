@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using HexagonalArch.API.Dtos;
-using HexagonalArch.API.Models;
 using HexagonalArch.API.Services;
-using System.Globalization;
+using HexagonalArch.API.Application.UseCases.EventUseCase;
+using HexagonalArch.API.Application.UseCases.TiketUseCase;
+using HexagonalArch.API.Application.Exceptions;
 
 namespace HexagonalArch.API.Controllers;
 
@@ -26,67 +27,37 @@ public class EventController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(Event), StatusCodes.Status201Created)]
-    public async Task<ActionResult<Event>> Create([FromBody] EventDTO dto)
+    [ProducesResponseType(typeof(CreateEventUseCase.Output), StatusCodes.Status201Created)]
+    public async Task<ActionResult<CreateEventUseCase.Output>> Create([FromBody] EventDTO dto)
     {
-        var eventDate = DateTime.ParseExact(dto.Date, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-
-        var partner = await _partnerService.FindByIdAsync(dto.Partner.Id);
-        if (partner is null)
+        try
         {
-            return BadRequest("Partner not found");
+            var partnerId = dto.Partner != null ? dto.Partner.Id : 0;
+            var useCase = new CreateEventUseCase(_eventService, _partnerService);
+            var output = await useCase.Execute(new CreateEventUseCase.Input(dto.Date, dto.Name, partnerId, dto.TotalSpots));
+            return Created("/events", output);
         }
-
-        var @event = new Event
+        catch (ValidationException ex)
         {
-            Name = dto.Name,
-            Date = eventDate,
-            TotalSpots = dto.TotalSpots,
-            Partner = partner
-        };
-
-        var savedEvent = await _eventService.SaveAsync(@event);
-        return Created($"/events/{savedEvent.Id}", savedEvent);
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost("{id:long}/subscribe")]
-    public async Task<IActionResult> Subscribe(long id, [FromBody] SubscribeDTO dto)
+    public async Task<ActionResult<SubscribeCustomerToEventUseCase.Output>> Subscribe(long id, [FromBody] SubscribeDTO dto)
     {
-        var customer = await _customerService.FindByIdAsync(dto.CustomerId);
-        if (customer is null)
+        try
         {
-            return UnprocessableEntity("Customer not found");
+            var useCase = new SubscribeCustomerToEventUseCase(_customerService, _eventService);
+            var output = await useCase.Execute(new SubscribeCustomerToEventUseCase.Input(id, dto.CustomerId));
+
+            return Ok(output);
         }
-
-        var @event = await _eventService.FindByIdAsync(id);
-        if (@event is null)
+        catch (ValidationException ex)
         {
-            return NotFound();
+            return BadRequest(ex.Message);
         }
-
-        var existingTicket = await _eventService.FindTicketByEventIdAndCustomerIdAsync(id, dto.CustomerId);
-        if (existingTicket is not null)
-        {
-            return UnprocessableEntity("Email already registered");
-        }
-
-        if (@event.TotalSpots <= @event.Tickets.Count)
-        {
-            return BadRequest("Event sold out");
-        }
-
-        var ticket = new Ticket
-        {
-            Event = @event,
-            Customer = customer,
-            ReservedAt = DateTime.UtcNow,
-            Status = TicketStatus.Pending
-        };
-
-        @event.Tickets.Add(ticket);
-        await _eventService.SaveAsync(@event);
-
-        return Ok(new EventDTO(@event));
+        
     }
 }
 

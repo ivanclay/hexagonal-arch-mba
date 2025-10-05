@@ -4,7 +4,7 @@ namespace HexagonalArch.API.Application.UseCases.Customer;
 
 public class CreateCustomerUseCase : UseCase<CreateCustomerUseCase.Input, CreateCustomerUseCase.Output>
 {
-    public override Output Execute(Input input)
+    public override Task<Output> Execute(Input input)
     {
         throw new NotImplementedException();
     }

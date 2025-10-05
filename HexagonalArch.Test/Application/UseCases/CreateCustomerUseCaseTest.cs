@@ -6,7 +6,7 @@ namespace HexagonalArch.Test.Application.UseCases;
 public class CreateCustomerUseCaseTest
 {
     [Fact]
-    public void DeveCriarUmCustomer()
+    public async Task DeveCriarUmCustomer()
     {
         const string expectedCpf = "12345678901";
         const string expectedEmail = "john.doe@gmil.com";
@@ -15,12 +15,11 @@ public class CreateCustomerUseCaseTest
         var createInput = new Input(expectedCpf, expectedEmail, expectedName);
 
         var useCase = new CreateCustomerUseCase();
-        var output = useCase.Execute(createInput);
+        var output = await useCase.Execute(createInput);
 
-        Assert.NotNull(output.id);
+        Assert.True(output.id > 0);
         Assert.Equal(expectedCpf, output.cpf);
         Assert.Equal(expectedEmail, output.email);
         Assert.Equal(expectedName, output.name);
-
     }
 }

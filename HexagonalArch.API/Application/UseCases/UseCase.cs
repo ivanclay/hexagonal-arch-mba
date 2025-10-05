@@ -2,6 +2,6 @@
 
 public abstract class UseCase<TInput, TOutput>
 {
-    public abstract TOutput Execute(TInput input);
+    public abstract Task<TOutput> Execute(TInput input);
 }
 
