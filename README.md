@@ -9,3 +9,8 @@ O projeto original foi escrito em Java, e por escolha particular, preferi conver
 [Código inicial convertido para C#](https://github.com/ivanclay/hexagonal-arch-mba/tree/conversao-inicial)
 
 Boa parte da conversão foi realizada utilizando o Copilot, portanto pode não estar perfeita, mas aprentemente está funcionando e isso é o que importa, por o objetivo final é a mudança de abordagem arquitetural que será feita por mim.
+
+## Ferramentas de Cobertura de Código
+Eu aproveitei e instalei ferramentas de cobertura de código para que ao desenvolver o projeto pudesse ir medindo a cobertura e ajustando.
+
+Adicionei [aqui](Docs/CodeCoverage.md) um tutorial de como fazer isso.
