@@ -1,6 +1,6 @@
 ﻿using HexagonalArch.API.Application.UseCases;
 
-namespace HexagonalArch.API.Application.UseCases.Customer;
+namespace HexagonalArch.API.Application.UseCases.CustomerUserCase;
 
 public class GetCustomerByIdUseCase : UseCase<GetCustomerByIdUseCase.Input, GetCustomerByIdUseCase.Output>
 {

@@ -1,12 +1,35 @@
 ﻿using HexagonalArch.API.Application.UseCases;
+using HexagonalArch.API.Models;
+using HexagonalArch.API.Services;
 
-namespace HexagonalArch.API.Application.UseCases.Customer;
+namespace HexagonalArch.API.Application.UseCases.CustomerUserCase;
 
 public class CreateCustomerUseCase : UseCase<CreateCustomerUseCase.Input, CreateCustomerUseCase.Output>
 {
-    public override Task<Output> Execute(Input input)
+    private readonly CustomerService customerService;
+
+    public CreateCustomerUseCase(CustomerService _customerService)
     {
-        throw new NotImplementedException();
+        customerService = _customerService;
+    }
+
+    public async override Task<Output> Execute(Input input)
+    {
+        var customer = new Customer
+        {
+            Cpf = input.cpf,
+            Email = input.email,
+            Name = input.name,
+        };
+
+        var savedCustomer = await customerService.SaveAsync(customer);
+
+        return new Output(
+           id: savedCustomer.Id,
+           name: savedCustomer.Name,
+           email: savedCustomer.Email,
+           cpf: savedCustomer.Cpf
+       );
     }
 
     public record Input(string cpf, string email, string name);

@@ -13,13 +13,15 @@ public class PartnerService
         _repository = repository;
     }
 
-    public async Task<Partner> SaveAsync(Partner partner)
+    public PartnerService(){  }
+
+    public virtual async Task<Partner> SaveAsync(Partner partner)
     {
         await _repository.AddAsync(partner);
         return partner;
     }
 
-    public async Task<Partner?> FindByIdAsync(long id)
+    public virtual async Task<Partner?> FindByIdAsync(long id)
     {
         return await _repository.FindByIdAsync(id);
     }

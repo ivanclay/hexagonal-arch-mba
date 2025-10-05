@@ -13,7 +13,12 @@ public class CustomerService
         _repository = repository;
     }
 
-    public async Task<Customer> SaveAsync(Customer customer)
+    public CustomerService()
+    {
+        
+    }
+
+    public virtual async Task<Customer> SaveAsync(Customer customer)
     {
         await _repository.AddAsync(customer);
         return customer;

@@ -19,7 +19,9 @@ public class EventService
         _ticketRepository = ticketRepository;
     }
 
-    public async Task<Event> SaveAsync(Event @event)
+    public EventService(){  }
+
+    public virtual async Task<Event> SaveAsync(Event @event)
     {
         await _eventRepository.AddAsync(@event);
         return @event;
