@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using HexagonalArch.API.Dtos;
-using HexagonalArch.API.Models;
-using HexagonalArch.API.Services;
+using HexagonalArch.API.Application.UseCases.CustomerUserCase;
 
 namespace HexagonalArch.API.Controllers;
 
@@ -10,50 +9,33 @@ namespace HexagonalArch.API.Controllers;
 [Route("customers")]
 public class CustomerController : ControllerBase
 {
-    private readonly CustomerService _customerService;
+    private readonly CreateCustomerUseCase _createCustomerUseCase;
+    private readonly GetCustomerByIdUseCase _getCustomerByIdUseCase;
 
-    public CustomerController(CustomerService customerService)
+    public CustomerController(CreateCustomerUseCase createCustomerUseCase, GetCustomerByIdUseCase getCustomerByIdUseCase)    
     {
-        _customerService = customerService;
+        _createCustomerUseCase = createCustomerUseCase;
+        _getCustomerByIdUseCase = getCustomerByIdUseCase;
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CustomerDTO dto)
     {
-        var existingByCpf = await _customerService.FindByCpfAsync(dto.Cpf);
-        if (existingByCpf is not null)
-        {
-            return UnprocessableEntity("Customer already exists");
-        }
-
-        var existingByEmail = await _customerService.FindByEmailAsync(dto.Email);
-        if (existingByEmail is not null)
-        {
-            return UnprocessableEntity("Customer already exists");
-        }
-
-        var customer = new Customer
-        {
-            Name = dto.Name,
-            Cpf = dto.Cpf,
-            Email = dto.Email
-        };
-
-        customer = await _customerService.SaveAsync(customer);
-
-        return Created($"/customers/{customer.Id}", customer);
+        var output = await _createCustomerUseCase.Execute(new CreateCustomerUseCase.Input(dto.Cpf, dto.Email, dto.Name));
+        return Created($"/customers/{output.id}", output);
     }
 
     [HttpGet("{id:long}")]
     public async Task<IActionResult> Get(long id)
     {
-        var customer = await _customerService.FindByIdAsync(id);
-        if (customer is null)
+        var output = await _getCustomerByIdUseCase.Execute(new GetCustomerByIdUseCase.Input(id));
+        
+        if (output is null)
         {
             return NotFound();
         }
 
-        return Ok(customer);
+        return Ok(output);
     }
 }
 

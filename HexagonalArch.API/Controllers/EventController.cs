@@ -12,18 +12,13 @@ namespace HexagonalArch.API.Controllers;
 [Route("events")]
 public class EventController : ControllerBase
 {
-    private readonly CustomerService _customerService;
-    private readonly EventService _eventService;
-    private readonly PartnerService _partnerService;
+    private readonly CreateEventUseCase _createEventUseCase;
+    private readonly SubscribeCustomerToEventUseCase _subscribeCustomerToEventUseCase;
 
-    public EventController(
-        CustomerService customerService,
-        EventService eventService,
-        PartnerService partnerService)
+    public EventController(CreateEventUseCase createEventUseCase, SubscribeCustomerToEventUseCase subscribeCustomerToEventUseCase)
     {
-        _customerService = customerService;
-        _eventService = eventService;
-        _partnerService = partnerService;
+        _createEventUseCase = createEventUseCase;
+        _subscribeCustomerToEventUseCase = subscribeCustomerToEventUseCase;
     }
 
     [HttpPost]
@@ -33,8 +28,8 @@ public class EventController : ControllerBase
         try
         {
             var partnerId = dto.Partner != null ? dto.Partner.Id : 0;
-            var useCase = new CreateEventUseCase(_eventService, _partnerService);
-            var output = await useCase.Execute(new CreateEventUseCase.Input(dto.Date, dto.Name, partnerId, dto.TotalSpots));
+                        
+            var output = await _createEventUseCase.Execute(new CreateEventUseCase.Input(dto.Date, dto.Name, partnerId, dto.TotalSpots));
             return Created("/events", output);
         }
         catch (ValidationException ex)
@@ -48,8 +43,7 @@ public class EventController : ControllerBase
     {
         try
         {
-            var useCase = new SubscribeCustomerToEventUseCase(_customerService, _eventService);
-            var output = await useCase.Execute(new SubscribeCustomerToEventUseCase.Input(id, dto.CustomerId));
+            var output = await _subscribeCustomerToEventUseCase.Execute(new SubscribeCustomerToEventUseCase.Input(id, dto.CustomerId));
 
             return Ok(output);
         }
