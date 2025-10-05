@@ -18,8 +18,8 @@
 mono_crash.*
 
 # Code Coverage Results
-# [Tt]estResults/
-# [Cc]overage-report/
+[Tt]estResults/
+[Cc]overage-report/
 
 # Build results
 [Dd]ebug/

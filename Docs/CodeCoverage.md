@@ -68,7 +68,7 @@ reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"cov
 
 
 📊 **Cobertura de Testes**
-Veja o [sumário da cobertura](coverage-report/SummaryGithub.md) para detalhes por classe e método.
+Veja o [sumário da cobertura](SummaryGithub.md) para detalhes por classe e método.
 
 
 ---
